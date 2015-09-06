@@ -127,11 +127,11 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/cznic/mathutil"
-	"github.com/cznic/parser/yacc"
-	"github.com/cznic/sortutil"
-	"github.com/cznic/strutil"
-	"github.com/cznic/y"
+	"github.com/qiuyesuifeng/goyacc/Godeps/_workspace/src/github.com/cznic/mathutil"
+	"github.com/qiuyesuifeng/goyacc/Godeps/_workspace/src/github.com/cznic/parser/yacc"
+	"github.com/qiuyesuifeng/goyacc/Godeps/_workspace/src/github.com/cznic/sortutil"
+	"github.com/qiuyesuifeng/goyacc/Godeps/_workspace/src/github.com/cznic/strutil"
+	"github.com/qiuyesuifeng/goyacc/Godeps/_workspace/src/github.com/cznic/y"
 )
 
 var (

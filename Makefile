@@ -1,9 +1,5 @@
 # build rules.
-GO=go 
-GODEP_PATH:=$(shell godep path 2>/dev/null)
-ifdef GODEP_PATH
-GO=godep go
-endif
+GO=go
 
 .PHONY: all build install clean
 
@@ -17,7 +13,7 @@ install:
 
 clean:
 	$(GO) clean -i ./...
-	rm -f *~ y.output y.go tmp.go
+	rm -f *~ y.output y.go tmp.go goyacc
 
 test: 
 	$(GO) test -cover ./...
