@@ -1,37 +1,23 @@
-# Copyright 2014 The goyacc Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style
-# license that can be found in the LICENSE file.
+# build rules.
+GO=go 
+GODEP_PATH:=$(shell godep path 2>/dev/null)
+ifdef GODEP_PATH
+GO=godep go
+endif
 
-.PHONY: all clean editor later nuke todo internalError
+.PHONY: all build install clean
 
-grep=--include=*.go
+all: build install
 
-all: editor
-	go tool vet -printfuncs "Log:0,Logf:1" *.go
-	golint .
-	make todo
+build:
+	$(GO) build
+
+install:
+	$(GO) install ./...
 
 clean:
-	go clean
+	$(GO) clean -i ./...
 	rm -f *~ y.output y.go tmp.go
 
-editor:
-	go fmt
-	go test
-	go install
-
-internalError:
-	egrep -ho '"internal error.*"' *.go | sort | cat -n
-
-later:
-	@grep -n $(grep) LATER * || true
-	@grep -n $(grep) MAYBE * || true
-
-nuke: clean
-	go clean -i
-
-todo:
-	@grep -nr $(grep) ^[[:space:]]*_[[:space:]]*=[[:space:]][[:alpha:]][[:alnum:]]* * || true
-	@grep -nr $(grep) TODO * || true
-	@grep -nr $(grep) BUG * || true
-	@grep -nr $(grep) println * || true
+test: 
+	$(GO) test -cover ./...
