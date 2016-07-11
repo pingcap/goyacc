@@ -528,6 +528,8 @@ func %[1]sParse(yylex %[1]sLexer, ac *allocator) int {
 	yyEx, _ := yylex.(%[1]sLexerEx)
 	var yyn int
 	yyS := ac.cache
+	ac.yylval = yySymType{}
+	ac.yyVAL = yySymType{}
 
 	Nerrs := 0   /* number of errors */
 	Errflag := 0 /* error recovery flag */
