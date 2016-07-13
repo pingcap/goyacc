@@ -522,14 +522,14 @@ func %[1]slex1(yylex %[1]sLexer, lval *%[1]sSymType) (n int) {
 	return n
 }
 
-func %[1]sParse(yylex %[1]sLexer, cache *[]%[1]sSymType) int {
+func %[1]sParse(yylex %[1]sLexer, ac *Allocator) int {
 	const yyError = %[2]d
 
 	yyEx, _ := yylex.(%[1]sLexerEx)
 	var yyn int
-	var yylval %[1]sSymType
-	var yyVAL %[1]sSymType
-	yyS := *cache
+	yyS := ac.cache
+	ac.yylval = yySymType{}
+	ac.yyVAL = yySymType{}
 
 	Nerrs := 0   /* number of errors */
 	Errflag := 0 /* error recovery flag */
@@ -560,14 +560,14 @@ yystack:
 		nyys := make([]%[1]sSymType, len(yyS)*2)
 		copy(nyys, yyS)
 		yyS = nyys
-    *cache = yyS
+    ac.cache = yyS
 	}
-	yyS[yyp] = yyVAL
+	yyS[yyp] = ac.yyVAL
 	yyS[yyp].yys = yystate
 
 yynewstate:
 	if yychar < 0 {
-		yychar = %[1]slex1(yylex, &yylval)
+		yychar = %[1]slex1(yylex, &ac.yylval)
 		var ok bool
 		if yyxchar, ok = %[1]sXLAT[yychar]; !ok {
 			yyxchar = len(%[1]sSymNames) // > tab width
@@ -590,7 +590,7 @@ yynewstate:
 	switch {
 	case yyn > 0: // shift
 		yychar = -1
-		yyVAL = yylval
+		ac.yyVAL = ac.yylval
 		yystate = yyn
 		yyshift = yyn
 		if %[1]sDebug >= 2 {
@@ -685,9 +685,9 @@ yynewstate:
 		nyys := make([]%[1]sSymType, len(yyS)*2)
 		copy(nyys, yyS)
 		yyS = nyys
-    *cache = yyS
+    ac.cache = yyS
 	}
-	yyVAL = yyS[yyp+1]
+	ac.yyVAL = yyS[yyp+1]
 
 	/* consult goto table to find next state */
 	exState := yystate
@@ -735,7 +735,7 @@ yynewstate:
 			case parser.ActionValueGo:
 				f.Format("%s", part.Src)
 			case parser.ActionValueDlrDlr:
-				f.Format("yyVAL.%s", typ)
+				f.Format("ac.yyVAL.%s", typ)
 				if typ == "" {
 					panic("internal error 002")
 				}
@@ -746,7 +746,7 @@ yynewstate:
 				}
 				f.Format("yyS[yypt-%d].%s", max-num, typ)
 			case parser.ActionValueDlrTagDlr:
-				f.Format("yyVAL.%s", part.Tag)
+				f.Format("ac.yyVAL.%s", part.Tag)
 			case parser.ActionValueDlrTagNum:
 				f.Format("yyS[yypt-%d].%s", max-num, part.Tag)
 			}
@@ -756,7 +756,7 @@ yynewstate:
 	f.Format(`%u
 	}
 
-	if yyEx != nil && yyEx.Reduced(r, exState, &yyVAL) {
+	if yyEx != nil && yyEx.Reduced(r, exState, &ac.yyVAL) {
 		return -1
 	}
 	goto yystack /* stack new state and value */
