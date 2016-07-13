@@ -522,7 +522,7 @@ func %[1]slex1(yylex %[1]sLexer, lval *%[1]sSymType) (n int) {
 	return n
 }
 
-func %[1]sParse(yylex %[1]sLexer, ac *allocator) int {
+func %[1]sParse(yylex %[1]sLexer, ac *Allocator) int {
 	const yyError = %[2]d
 
 	yyEx, _ := yylex.(%[1]sLexerEx)
