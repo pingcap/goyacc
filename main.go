@@ -522,14 +522,14 @@ func %[1]slex1(yylex %[1]sLexer, lval *%[1]sSymType) (n int) {
 	return n
 }
 
-func %[1]sParse(yylex %[1]sLexer, cache *[]%[1]sSymType) int {
+func %[1]sParse(yylex %[1]sLexer, parser *Parser) int {
 	const yyError = %[2]d
 
 	yyEx, _ := yylex.(%[1]sLexerEx)
 	var yyn int
 	var yylval %[1]sSymType
 	var yyVAL %[1]sSymType
-	yyS := *cache
+	yyS := parser.cache
 
 	Nerrs := 0   /* number of errors */
 	Errflag := 0 /* error recovery flag */
@@ -560,7 +560,7 @@ yystack:
 		nyys := make([]%[1]sSymType, len(yyS)*2)
 		copy(nyys, yyS)
 		yyS = nyys
-    *cache = yyS
+		parser.cache = yyS
 	}
 	yyS[yyp] = yyVAL
 	yyS[yyp].yys = yystate
@@ -685,7 +685,7 @@ yynewstate:
 		nyys := make([]%[1]sSymType, len(yyS)*2)
 		copy(nyys, yyS)
 		yyS = nyys
-    *cache = yyS
+		parser.cache = yyS
 	}
 	yyVAL = yyS[yyp+1]
 
